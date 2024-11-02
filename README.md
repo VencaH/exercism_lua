@@ -1,2 +1,2 @@
 # exercism_lua
-Exercism Lua exisrcises
+Exercism Lua exercises
