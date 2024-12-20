@@ -56,5 +56,8 @@ List<String> getChangedFilesList(){
 
 @NonCPS
 List<String> getChangedExercise() {
-    return getChangedFilesList().collect {it.tokenize("/")[0]}.unique(false)
+    return getChangedFilesList()
+        .collect {it.tokenize("/")[0]}
+        .findAll {item -> item.contains('/') && item.contains('.lua')} // make sure that only lua file in exercise subfolders are checked
+        .unique(false)
 }
