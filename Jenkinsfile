@@ -16,6 +16,8 @@ pipeline {
 
                     List<String> changes = getChangedFilesList()
                     println ("Changed file list: " + changes)
+                    List<String> exercises = getChangedExercise()
+                    println ("Changed exercises: " + exercises)
                 }
             }
         }
@@ -26,12 +28,11 @@ pipeline {
                         [
                             (exercise): {
                                 stage('testing ${exercise}'){
-                                    sh "cd ./${exercise}"
-                                    sh "busted"
+                                    sh "cd ./${exercise} && busted ."
                                 }
                                 
                                 stage('submitting ${exercise}'){
-                                    sh "exercism submit ${exercise}.lua"
+                                    sh "exercism submit ${exercise}/${exercise}.lua"
                                 }
                             }
                         ]
@@ -57,7 +58,7 @@ List<String> getChangedFilesList(){
 @NonCPS
 List<String> getChangedExercise() {
     return getChangedFilesList()
-        .collect {it.tokenize("/")[0]}
         .findAll {item -> item.contains('/') && item.contains('.lua')} // make sure that only lua file in exercise subfolders are checked
+        .collect {it.tokenize("/")[0]}
         .unique(false)
 }
