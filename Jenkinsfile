@@ -19,6 +19,27 @@ pipeline {
                 }
             }
         }
+        stage('Test solutions') {
+            steps{
+                script{
+                    parallel getChangedExercise().collectEntries {exercise ->
+                        [
+                            (exercise): {
+                                stage('testing ${exercise}'){
+                                    sh "cd ./${exercise}"
+                                    sh "busted"
+                                }
+                                
+                                stage('submitting ${exercise}'){
+                                    sh "exercism submit ${exercise}.lua"
+                                }
+                            }
+                        ]
+                        
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -31,4 +52,9 @@ List<String> getChangedFilesList(){
         }
     }
     return changedFiles
+}
+
+@NonCPS
+List<String> getChangedExercise() {
+    return getChangedFilesList().collect {it.tokenize("/")[0]}.unique(false)
 }
